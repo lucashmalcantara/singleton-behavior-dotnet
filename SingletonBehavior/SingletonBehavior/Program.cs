@@ -3,7 +3,15 @@
 Console.WriteLine("###### SINGLETON BEHAVIOUR ######");
 
 CreateInstanceBehavior();
-RunMethodBehavior();
+RunMethodsWithLockBehavior();
+RunMethodsBehavior();
+Finish();
+
+static void Finish()
+{
+    Console.WriteLine("\n\n\nDone...");
+    Console.ReadLine();
+}
 
 static void CreateInstanceBehavior()
 {
@@ -38,18 +46,41 @@ static void GetSingletonInstance(string value)
     Console.WriteLine(singleton.Value);
 }
 
-static void RunMethodBehavior()
+static void RunMethodsWithLockBehavior()
 {
-    Console.WriteLine("\n\n# RUN METHOD - MULTITHREADED ENVIRONMENT");
+    Console.WriteLine("\n\n# RUN METHODS WITH LOCK - MULTITHREADED ENVIRONMENT");
+    Console.WriteLine("\nThe execution of one method must wait for the execution of the other.\n\n");
 
     Thread process1 = new(() =>
     {
-        Singleton.GetInstance("FOO").LongRun(executionId: 1, millisecondsDelay: 5000);
+        Singleton.GetInstance("FOO").LongRunWithLock(executionId: 1, millisecondsDelay: 2000);
     });
 
     Thread process2 = new(() =>
     {
-        Singleton.GetInstance("BAR").LongRun(executionId: 2, millisecondsDelay: 5000);
+        Singleton.GetInstance("BAR").LongRunWithLock(executionId: 2, millisecondsDelay: 2000);
+    });
+
+    process1.Start();
+    process2.Start();
+
+    process1.Join();
+    process2.Join();
+}
+
+
+static void RunMethodsBehavior()
+{
+    Console.WriteLine("\n\n# RUN METHODS - MULTITHREADED ENVIRONMENT");
+
+    Thread process1 = new(() =>
+    {
+        Singleton.GetInstance("FOO").LongRun(executionId: 1, millisecondsDelay: 2000);
+    });
+
+    Thread process2 = new(() =>
+    {
+        Singleton.GetInstance("BAR").LongRun(executionId: 2, millisecondsDelay: 2000);
     });
 
     process1.Start();

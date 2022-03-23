@@ -45,11 +45,21 @@ namespace SingletonBehavior
         // We'll use this property to prove that our Singleton really works.
         public string Value { get; set; }
 
+        public void LongRunWithLock(int executionId, int millisecondsDelay)
+        {
+            lock (_lock)
+            {
+                Console.WriteLine($"{DateTime.UtcNow} | Singleton instance name: {Value} | Execution {executionId} started |  Milliseconds delay: {millisecondsDelay}");
+                Thread.Sleep(millisecondsDelay);
+                Console.WriteLine($"{DateTime.UtcNow}: Execution {executionId} finished");
+            }
+        }
+
         public void LongRun(int executionId, int millisecondsDelay)
         {
             Console.WriteLine($"{DateTime.UtcNow} | Singleton instance name: {Value} | Execution {executionId} started |  Milliseconds delay: {millisecondsDelay}");
             Thread.Sleep(millisecondsDelay);
-            Console.WriteLine($"{DateTime.UtcNow}: Execution {executionId} finished");
+            Console.WriteLine($"{DateTime.UtcNow} | Execution {executionId} finished");
         }
     }
 }
